@@ -1,3 +1,33 @@
+
+## OpenWrt Development for Xiaomi RA82 AX3000 (Qualcomm IPQ5018)
+
+This repository is a fork of the **official OpenWrt source tree**, dedicated to implementing and testing complete upstream support for the **Xiaomi RA82 AX3000** wireless router. The official repository serves as a mirror of `https://git.openwrt.org/openwrt/openwrt.git` and accepts Pull Requests (PRs) which are merged via staging trees,.
+
+The RA82 AX3000 is built around the **Qualcomm IPQ5018** System-on-Chip (SoC),, utilizing the **armv7** architecture. The device is configured with 512MB of system memory, defined by a memory size of `0x20000000` starting at address `0x40000000`.
+
+### Key Hardware Integration Details
+
+The device tree source (DTS) file integrated here maps the necessary hardware components based on direct extraction from the device:
+
+*   **SoC and Architecture:** The device uses the Qualcomm IPQ5018 model,.
+*   **Flash Layout:** The device employs a NAND flash controller compatible with `qcom,ebi2-nandc-bam-v2.1.1`. The DTS defines the dual-root filesystem scheme typical for these devices. The primary partition is **`rootfs`** starting at offset `0xa80000`,, and the redundant partition is **`rootfs_1`** starting at offset `0x2e80000`,. Both partitions are sized `0x2400000`,,.
+*   **Boot Configuration:** The kernel command line arguments specify booting using the UBI filesystem: **`ubi.mtd=rootfs root=mtd:ubi_rootfs rootfstype=squashfs rootwait`**,.
+*   **Networking Hardware:** The primary switch component is configured using the compatible string `qcom,ess-switch-ipq50xx`.
+*   **Peripherals (Buttons/LEDs):** Support for user controls is defined via GPIO mappings,. The **WPS button** is defined on `gpio38`,. System LEDs include **`led_sys_blue`** on `gpio26` and **`led_sys_yellow`** on `gpio27`,,.
+
+### Relationship to Other Projects
+
+This project aligns with and draws knowledge from established OpenWrt development for related hardware, specifically devices in the **Redmi AX3000 / Xiaomi CR880x / Xiaomi CR881x** family, which also use the IPQ5018 platform,.
+
+### Status and Goal
+
+The ultimate goal of this repository is to produce **clean, maintainable patches** that can be submitted as a Pull Request to the main OpenWrt repository, for eventual **upstream merging**.
+
+---
+### **Topics/Tags (for GitHub categorization):**
+
+`openwrt` `ipq5018` `xiaomi` `ra82` `ax3000` `device-tree` `firmware` `networking`
+
 ![OpenWrt logo](include/logo.png)
 
 OpenWrt Project is a Linux operating system targeting embedded devices. Instead
