@@ -14,7 +14,7 @@
 	compatible = "xiaomi,ra82", "qcom,ipq5018";
 
 	aliases {
-		label-mac-device = &dp1;
+		label-mac-device = &gmac0;
 		led-boot = &led_system_blue;
 		led-failsafe = &led_system_yellow;
 		led-running = &led_system_blue;
@@ -142,60 +142,103 @@
 	};
 };
 
-&switch {
+&uniphy0 {
 	status = "okay";
-	switch_mac_mode = <MAC_MODE_SGMII_CHANNEL0>;
 
-	qcom,port_phyinfo {
-		port@0 { port_id = <1>; mdiobus = <&mdio0>; phy_address = <7>; phy_dac = <0x10 0x10>; };
-		port@1 { port_id = <2>; forced-speed = <1000>; forced-duplex = <1>; };
-	};
+	assigned-clocks = <&uniphy0 UNIPHY_CLK_REF>;
+	assigned-clock-rates = <UNIPHY_REFCLK_25MHZ>;
+};
 
-	ess-switch1@1 {
-		compatible = "qcom,ess-switch-qca83xx";
-		device_id = <1>;
-		reset_gpio = <26>;
-		switch_access_mode = "mdio";
-		mdio-bus = <&mdio1>;
+&gmac0 {
+	status = "okay";
+};
 
-		qca,ar8327-initvals = <
-			0x000c 0x00000080
-			0x0010 0x002613a0
-			0x0094 0x000010ce
-			0x00e0 0xc74164de
-		>;
+&gmac1 {
+	status = "okay";
 
-		switch_cpu_bmp = <0x60>;
-		switch_lan_bmp = <0x0e>;
-		switch_wan_bmp = <0x10>;
+	phy-mode = "sgmii";
 
-		qcom,port_phyinfo {
-			port@1 { port_id = <1>; phy_address = <0>; };
-			port@2 { port_id = <2>; phy_address = <1>; };
-			port@3 { port_id = <3>; phy_address = <2>; };
-			port@4 { port_id = <4>; phy_address = <3>; };
-			port@5 { port_id = <5>; phy_address = <4>; };
-			port@6 { port_id = <6>; forced-speed = <1000>; forced-duplex = <1>; };
-		};
+	fixed-link {
+		speed = <1000>;
+		full-duplex;
 	};
 };
 
-&dp1 { status = "okay"; };
-&dp2 { status = "okay"; phy-mode = "sgmii"; };
-&mdio0 { status = "okay"; };
-&ge_phy { qcom,dac-preset-short-cable; };
+&mdio0 {
+	status = "okay";
+};
+
+&ge_phy {
+	qcom,dac-preset-short-cable;
+};
 
 &mdio1 {
 	status = "okay";
+
 	pinctrl-0 = <&mdio1_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
 
-	ethernet-phy@0 { reg = <0>; };
-	ethernet-phy@1 { reg = <1>; };
-	ethernet-phy@2 { reg = <2>; };
-	ethernet-phy@3 { reg = <3>; };
-	ethernet-phy@4 { reg = <4>; };
+	qca8337_0: ethernet-phy@0 { reg = <0>; };
+	qca8337_1: ethernet-phy@1 { reg = <1>; };
+	qca8337_2: ethernet-phy@2 { reg = <2>; };
+	qca8337_3: ethernet-phy@3 { reg = <3>; };
+	qca8337_4: ethernet-phy@4 { reg = <4>; };
+
+	ethernet-switch@18 {
+		compatible = "qca,qca8337";
+		reg = <0x18>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@1 {
+				reg = <1>;
+				label = "lan1";
+				phy-handle = <&qca8337_0>;
+			};
+
+			port@2 {
+				reg = <2>;
+				label = "lan2";
+				phy-handle = <&qca8337_1>;
+			};
+
+			port@3 {
+				reg = <3>;
+				label = "lan3";
+				phy-handle = <&qca8337_2>;
+			};
+
+			port@4 {
+				reg = <4>;
+				label = "wan";
+				phy-handle = <&qca8337_3>;
+			};
+
+			port@5 {
+				reg = <5>;
+				phy-handle = <&qca8337_4>;
+				phy-mode = "gmii";
+				ethernet = <&gmac0>;
+			};
+
+			port@6 {
+				reg = <6>;
+				phy-mode = "sgmii";
+				ethernet = <&gmac1>;
+				qca,sgmii-enable-pll;
+
+				fixed-link {
+					speed = <1000>;
+					full-duplex;
+				};
+			};
+		};
+	};
 };
 
 &tlmm {
@@ -214,14 +257,42 @@
 	};
 
 	mdio1_pins: mdio-state {
-		mdc-pins { pins = "gpio36"; function = "mdc"; drive-strength = <8>; bias-pull-up; };
-		mdio-pins { pins = "gpio37"; function = "mdio"; drive-strength = <8>; bias-pull-up; };
+		mdc-pins {
+			pins = "gpio36";
+			function = "mdc";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
+
+		mdio-pins {
+			pins = "gpio37";
+			function = "mdio";
+			drive-strength = <8>;
+			bias-pull-up;
+		};
 	};
 
 	qpic_pins: qpic-state {
-		clock-pins { pins = "gpio9"; function = "qspi_clk"; drive-strength = <8>; bias-disable; };
-		cs-pins    { pins = "gpio8"; function = "qspi_cs"; drive-strength = <8>; bias-disable; };
-		data-pins  { pins = "gpio4", "gpio5", "gpio6", "gpio7"; function = "qspi_data"; drive-strength = <8>; bias-disable; };
+		clock-pins {
+			pins = "gpio9";
+			function = "qspi_clk";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		cs-pins {
+			pins = "gpio8";
+			function = "qspi_cs";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		data-pins {
+			pins = "gpio4", "gpio5", "gpio6", "gpio7";
+			function = "qspi_data";
+			drive-strength = <8>;
+			bias-disable;
+		};
 	};
 
 	serial_0_pins: uart0-state {
