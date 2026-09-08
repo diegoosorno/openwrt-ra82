@@ -237,7 +237,7 @@ define Device/xiaomi_ra82
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
 	SOC := ipq5018
-	DEVICE_DTS_CONFIG := config@mp03.3
+	DEVICE_DTS_CONFIG := config@mp03.1
 	KERNEL_SIZE := 36864k
 	NAND_SIZE := 128m
 	DEVICE_PACKAGES := ath11k-firmware-ipq5018-qcn6122
