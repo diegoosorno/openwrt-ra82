@@ -23,7 +23,7 @@
 	};
 
 	chosen {
-		bootargs-append = " ubi.mtd=rootfs root=/dev/ubiblock0_0 coherent_pool=2M";
+		bootargs-append = " root=/dev/ubiblock0_1 swiotlb=1 coherent_pool=2M";
 		stdout-path = "serial0:115200n8";
 	};
 
@@ -35,14 +35,8 @@
 
 		reset-button {
 			label = "reset";
-			gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
+			gpios = <&tlmm 38 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
-		};
-
-		mesh-button {
-			label = "mesh";
-			gpios = <&tlmm 23 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_WPS_BUTTON>;
 		};
 	};
 
@@ -55,26 +49,26 @@
 		led_system_blue: system-blue {
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_POWER;
-			gpios = <&tlmm 19 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
 			default-state = "on";
 		};
 
 		led_system_yellow: system-yellow {
 			color = <LED_COLOR_ID_YELLOW>;
 			function = LED_FUNCTION_POWER;
-			gpios = <&tlmm 17 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 25 GPIO_ACTIVE_HIGH>;
 		};
 
 		led_net_blue: net-blue {
 			color = <LED_COLOR_ID_BLUE>;
 			function = LED_FUNCTION_WAN_ONLINE;
-			gpios = <&tlmm 22 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 26 GPIO_ACTIVE_HIGH>;
 		};
 
 		led_net_yellow: net-yellow {
 			color = <LED_COLOR_ID_YELLOW>;
 			function = LED_FUNCTION_WAN;
-			gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
+			gpios = <&tlmm 27 GPIO_ACTIVE_HIGH>;
 		};
 	};
 };
@@ -177,7 +171,7 @@
 
 	pinctrl-0 = <&mdio1_pins>;
 	pinctrl-names = "default";
-	reset-gpios = <&tlmm 26 GPIO_ACTIVE_LOW>;
+	reset-gpios = <&tlmm 39 GPIO_ACTIVE_LOW>;
 
 	qca8337_0: ethernet-phy@0 { reg = <0>; };
 	qca8337_1: ethernet-phy@1 { reg = <1>; };
@@ -243,14 +237,14 @@
 
 &tlmm {
 	button_pins: button-state {
-		pins = "gpio23", "gpio25";
+		pins = "gpio38";
 		function = "gpio";
 		drive-strength = <8>;
 		bias-pull-up;
 	};
 
 	leds_pins: leds-state {
-		pins = "gpio17", "gpio19", "gpio20", "gpio22";
+		pins = "gpio24", "gpio25", "gpio26", "gpio27";
 		function = "gpio";
 		drive-strength = <8>;
 		bias-pull-down;
@@ -296,8 +290,8 @@
 	};
 
 	serial_0_pins: uart0-state {
-		pins = "gpio28", "gpio29";
-		function = "blsp0_uart1";
+		pins = "gpio20", "gpio21";
+		function = "blsp0_uart0";
 		bias-disable;
 	};
 };

@@ -236,8 +236,10 @@ define Device/xiaomi_ra82
 	DEVICE_MODEL := AX3000 Mesh (RA82)
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DEVICE_DTS_CONFIG := config@mp03.3
 	SOC := ipq5018
+	DEVICE_DTS_CONFIG := config@mp03.3
+	KERNEL_SIZE := 36864k
+	NAND_SIZE := 128m
 	DEVICE_PACKAGES := ath11k-firmware-ipq5018-qcn6122
 endef
 TARGET_DEVICES += xiaomi_ra82
