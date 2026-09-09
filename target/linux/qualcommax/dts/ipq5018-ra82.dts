@@ -23,7 +23,7 @@
 	};
 
 	chosen {
-		bootargs-append = " root=/dev/ubiblock0_1 swiotlb=1 coherent_pool=2M";
+		bootargs-append = " earlycon root=/dev/ubiblock0_1 swiotlb=1 coherent_pool=2M";
 		stdout-path = "serial0:115200n8";
 	};
 
@@ -179,9 +179,9 @@
 	qca8337_3: ethernet-phy@3 { reg = <3>; };
 	qca8337_4: ethernet-phy@4 { reg = <4>; };
 
-	ethernet-switch@18 {
+	ethernet-switch@11 {
 		compatible = "qca,qca8337";
-		reg = <0x18>;
+		reg = <0x11>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 
@@ -297,12 +297,9 @@
 };
 
 &q6v5_wcss {
-	status = "okay";
-	firmware-name = "ath11k/IPQ5018/hw1.0/q6_fw.mdt",
-			"ath11k/IPQ5018/hw1.0/m3_fw.mdt";
+	status = "disabled";
 };
 
 &wifi {
-	status = "okay";
-	qcom,rproc = <&q6v5_wcss>;
+	status = "disabled";
 };
